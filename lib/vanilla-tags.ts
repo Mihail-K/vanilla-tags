@@ -7,15 +7,15 @@ interface ITagMap {
 
 export class VanillaTags {
     private _tagsMap: ITagMap = {};
-    private _inputField: Element;
-    private _valueField: Element;
+    private _inputField: HTMLInputElement;
+    private _outputField: HTMLInputElement;
 
     constructor(
         private _container: Element,
         private _config: IVanillaTagsConfig = {}
     ) {
         this._inputField = this._createInputField();
-        this._valueField = this._createValueField();
+        this._outputField = this._createOutputField();
         this._createInitialTags();
     }
 
@@ -48,6 +48,22 @@ export class VanillaTags {
         return true;
     }
 
+    get inputValue(): string {
+        return this._inputField.value;
+    }
+
+    get isInputEmpty(): boolean {
+        return !!this.inputValue;
+    }
+
+    get isInputDuplicate(): boolean {
+        return !this._tagsMap[this.inputValue];
+    }
+
+    get isInputValid(): boolean {
+        return !this.isInputEmpty && !this.isInputDuplicate;
+    }
+
     get tags(): string[] {
         return Object.keys(this._tagsMap);
     }
@@ -56,54 +72,33 @@ export class VanillaTags {
         this._initialTagsList.forEach((value) => this.addTag(value));
     }
 
-    private _createInputField(): Element {
+    private _createInputField(): HTMLInputElement {
         const input = document.createElement('input');
-
-        const handleTagCreation = (event: KeyboardEvent) => {
-            if(event.keyCode === 13) {
-                if(this._isValidInput(input.value)) {
-                    this.addTag(input.value);
-                    input.value = '';
-                }
-
-                return false;
-            }
-
-            return true;
-        };
-        const highlightInvalidInput = () => {
-            // Highlight invalid inputs, except when the field is empty.
-            const valid = input.value === '' || this._isValidInput(input.value);
-            input.setAttribute('data-valid', valid.toString());
-        };
 
         input.setAttribute('class', 'vanilla-tags--tag-input');
         input.setAttribute('type', 'text');
         input.setAttribute('data-valid', 'true');
-        input.addEventListener('keydown', handleTagCreation);
-        input.addEventListener('keyup', highlightInvalidInput);
+        input.addEventListener('keydown', (event) => this._enterKeydownListener(event));
+        input.addEventListener('keyup', () => this._invalidInputListener());
 
-        this._container.addEventListener(TagEvent.Remove, highlightInvalidInput);
+        this._container.addEventListener(TagEvent.Remove, () => this._invalidInputListener());
         this._container.appendChild(input);
 
         return input;
     }
 
-    private _createValueField(): Element {
-        const value = document.createElement('input');
-        const updateFieldValue = (event: Event) => {
-            value.setAttribute('value', this.tags.join(';'));
-        };
+    private _createOutputField(): HTMLInputElement {
+        const output = document.createElement('input');
 
-        value.setAttribute('type', 'hidden');
-        value.setAttribute('name', this._outputName);
-        value.setAttribute('value', '');
+        output.setAttribute('type', 'hidden');
+        output.setAttribute('name', this._outputName);
+        output.setAttribute('value', '');
 
-        this._container.appendChild(value);
-        this._container.addEventListener(TagEvent.Add, updateFieldValue);
-        this._container.addEventListener(TagEvent.Remove, updateFieldValue);
+        this._container.addEventListener(TagEvent.Add, () => this._writeOutputValue());
+        this._container.addEventListener(TagEvent.Remove, () => this._writeOutputValue());
+        this._container.appendChild(output);
 
-        return value;
+        return output;
     }
 
     private _createTagRemoveButton(tag: Element, value: string) {
@@ -116,8 +111,27 @@ export class VanillaTags {
         tag.appendChild(button);
     }
 
-    private _isValidInput(value: string): boolean {
-        return !!value && !this._tagsMap[value];
+    private _enterKeydownListener(event: KeyboardEvent): boolean {
+        if(event.keyCode === 13) {
+            if(this.isInputValid) {
+                this.addTag(this._inputField.value);
+                this._inputField.value = '';
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private _invalidInputListener(): void {
+        // Highlight invalid inputs, except when the field is empty.
+        const valid = this.isInputEmpty || this.isInputValid;
+        this._inputField.setAttribute('data-valid', valid.toString());
+    }
+
+    private _writeOutputValue(): void {
+        this._outputField.setAttribute('value', this.tags.join(';'));
     }
 
     private get _outputName(): string {
