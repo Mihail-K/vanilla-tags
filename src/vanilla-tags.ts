@@ -2,7 +2,7 @@ import { TagEvent } from './tag-event';
 import { IVanillaTagsConfig } from './vanilla-tags-config';
 
 export class VanillaTags {
-    private _tagsMap = {};
+    private _tagsMap: { [key: string]: Element } = {};
     private _inputField: Element;
     private _valueField: Element;
 
@@ -55,7 +55,7 @@ export class VanillaTags {
     private _createInputField(): Element {
         const input = document.createElement('input');
 
-        const handleTagCreation = (event) => {
+        const handleTagCreation = (event: KeyboardEvent) => {
             if(event.keyCode === 13) {
                 if(this._isValidInput(input.value)) {
                     this.addTag(input.value);
@@ -87,7 +87,7 @@ export class VanillaTags {
 
     private _createValueField(): Element {
         const value = document.createElement('input');
-        const updateFieldValue = (event) => {
+        const updateFieldValue = (event: Event) => {
             value.setAttribute('value', this.tags.join(';'));
         };
 
@@ -117,7 +117,7 @@ export class VanillaTags {
     }
 
     private get _outputName(): string {
-        return this._container.getAttribute('data-name');
+        return this._container.getAttribute('data-name') || '';
     }
 
     private get _initialTagsList(): string[] {
