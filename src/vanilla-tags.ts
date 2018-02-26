@@ -1,8 +1,12 @@
 import { TagEvent } from './tag-event';
 import { IVanillaTagsConfig } from './vanilla-tags-config';
 
+interface ITagMap {
+    [key: string]: Element
+}
+
 export class VanillaTags {
-    private _tagsMap: { [key: string]: Element } = {};
+    private _tagsMap: ITagMap = {};
     private _inputField: Element;
     private _valueField: Element;
 
