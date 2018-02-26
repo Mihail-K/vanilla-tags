@@ -10,6 +10,13 @@ export class VanillaTags {
     private _inputField: HTMLInputElement;
     private _outputField: HTMLInputElement;
 
+    /**
+     * Constructs a Vanilla Tags container from a HTML DOM Element.
+     * Child elements like the trailing input field and hidden output are constructed eagerly.
+     * Any initial tags specified by <tt>data-value</tt> are also immediately constructed.
+     * @param {Element} _container A DOM Element to use an the Vanilla Tags container.
+     * @param {IVanillaTagsConfig} _config An object containing configuration parameters.
+     */
     constructor(
         private _container: Element,
         private _config: IVanillaTagsConfig = {}
@@ -19,6 +26,12 @@ export class VanillaTags {
         this._createInitialTags();
     }
 
+    /**
+     * Adds a new tag to the list of tags.
+     * The tag is appended to the DOM after any existing tags, but before the trailing input field.
+     * The tag must be valid, else this method returns <tt>null</tt>.
+     * @param {string} value The name of the tag to add.
+     */
     addTag(value: string): Element | null {
         if(!this.isValid(value)) return null;
         const tag = document.createElement('div');
@@ -36,6 +49,10 @@ export class VanillaTags {
         return tag;
     }
 
+    /**
+     * Removes a tag from the list of tags, if it exists.
+     * @param {string} value The name of the tag to remove.
+     */
     removeTag(value: string): boolean {
         const tag = this._tagsMap[value];
         if(!tag) return false;
@@ -49,34 +66,63 @@ export class VanillaTags {
         return true;
     }
 
+    /**
+     * Checks if the input string is empty.
+     * @param {string} value An input string to test.
+     */
     isEmpty(value: string): boolean {
         return !value;
     }
 
+    /**
+     * Checks if the input string duplicates an existing tag.
+     * @param {string} value An input string to test.
+     */
     isDuplicate(value: string): boolean {
         return !!this._tagsMap[value];
     }
 
+    /**
+     * Checks if the input string is valid.
+     * A valid string must not be empty, and must not be a duplicate of an existing tag.
+     * @param {string} value An input string to test.
+     */
     isValid(value: string): boolean {
         return !this.isEmpty(value) && !this.isDuplicate(value);
     }
 
+    /**
+     * Gets the current value of the trailing input field.
+     */
     get inputValue(): string {
         return this._inputField.value;
     }
 
+    /**
+     * Checks if the trailing input field is currently empty.
+     */
     get isInputEmpty(): boolean {
         return this.isEmpty(this.inputValue);
     }
 
+    /**
+     * Checks if the trailing input field currently duplicates an existing tag.
+     */
     get isInputDuplicate(): boolean {
         return this.isDuplicate(this.inputValue);
     }
 
+    /**
+     * Checks if the trailing input field contains a valid value.
+     * Validity is checked according to {@link VanillaTags#isValid}.
+     */
     get isInputValid(): boolean {
         return this.isValid(this.inputValue);
     }
 
+    /**
+     * Gets the list of tags.
+     */
     get tags(): string[] {
         return Object.keys(this._tagsMap);
     }
