@@ -6,7 +6,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "karma start my.conf.js"
+    "test": "karma start my.conf.js",
+    "prepublish": "tsc"
   },
   "author": "Mihail-K",
   "license": "MIT",
