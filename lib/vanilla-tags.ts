@@ -19,7 +19,8 @@ export class VanillaTags {
         this._createInitialTags();
     }
 
-    addTag(value: string): Element {
+    addTag(value: string): Element | null {
+        if(!this.isValid(value)) return null;
         const tag = document.createElement('div');
 
         tag.setAttribute('class', 'vanilla-tags--tag');
@@ -48,20 +49,32 @@ export class VanillaTags {
         return true;
     }
 
+    isEmpty(value: string): boolean {
+        return !value;
+    }
+
+    isDuplicate(value: string): boolean {
+        return !!this._tagsMap[value];
+    }
+
+    isValid(value: string): boolean {
+        return !this.isEmpty(value) && !this.isDuplicate(value);
+    }
+
     get inputValue(): string {
         return this._inputField.value;
     }
 
     get isInputEmpty(): boolean {
-        return !!this.inputValue;
+        return this.isEmpty(this.inputValue);
     }
 
     get isInputDuplicate(): boolean {
-        return !this._tagsMap[this.inputValue];
+        return this.isDuplicate(this.inputValue);
     }
 
     get isInputValid(): boolean {
-        return !this.isInputEmpty && !this.isInputDuplicate;
+        return this.isValid(this.inputValue);
     }
 
     get tags(): string[] {
