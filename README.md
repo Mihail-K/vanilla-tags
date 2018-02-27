@@ -22,6 +22,7 @@ let vanilla = new VanillaTags(element);
 
 ## Styling Tags
 Vanilla Tags uses a small list of CSS classes to style tags. All classes are namespaced to avoid collisions.
+
 | Class | Purpose |
 | --- | --- |
 | `.vanilla-tags--tag` | Each tag element |
