@@ -28,6 +28,7 @@ Vanilla Tags uses a small list of CSS classes to style tags. All classes are nam
 | `.vanilla-tags--tag` | Each tag element |
 | `.vanilla-tags--tag-remove` | The remove button on each tag |
 | `.vanilla-tags--tag-input` | The trailing input field |
+
 The library itself provides no default styles, but some examples might be added in the future.
 
 ### Invalid Inputs
